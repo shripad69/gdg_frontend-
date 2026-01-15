@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import CONFIG from "../../config";
 
 interface YearGroup {
   _id: string;
@@ -20,7 +21,7 @@ export const YearProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const fetchYears = async () => {
-      const res = await axios.get("http://localhost:3000/public/years");
+      const res = await axios.get(`${CONFIG.API_BASE_URL}/public/years`);
       const years: YearGroup[] = res.data.years;
 
       setAvailableYears(years);
