@@ -1,5 +1,12 @@
-import { Calendar } from 'lucide-react';
-import type { Event } from '@/data/mockData';
+import { Calendar } from "lucide-react";
+
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  image: string;
+}
 
 interface EventCardProps {
   event: Event;
@@ -20,14 +27,17 @@ const EventCard = ({ event, index }: EventCardProps) => {
           loading="lazy"
         />
       </div>
+
       <div className="p-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
           <Calendar className="w-4 h-4 text-google-blue" />
           <time>{event.date}</time>
         </div>
+
         <h3 className="font-display font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
           {event.title}
         </h3>
+
         <p className="text-sm text-muted-foreground line-clamp-2">
           {event.description}
         </p>

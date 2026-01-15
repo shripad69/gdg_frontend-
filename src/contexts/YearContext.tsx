@@ -1,28 +1,50 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
 
-interface YearContextType {
-  selectedYear: number;
-  setSelectedYear: (year: number) => void;
-  availableYears: number[];
+interface YearGroup {
+  _id: string;
+  year: number;
 }
 
-const YearContext = createContext<YearContextType | undefined>(undefined);
+interface YearContextType {
+  selectedYearId: string;
+  setSelectedYearId: (id: string) => void;
+  availableYears: YearGroup[];
+}
 
-export const YearProvider = ({ children }: { children: ReactNode }) => {
-  const availableYears = [2025, 2024, 2023, 2022];
-  const [selectedYear, setSelectedYear] = useState(2025);
+const YearContext = createContext<YearContextType | null>(null);
+
+export const YearProvider = ({ children }: { children: React.ReactNode }) => {
+  const [availableYears, setAvailableYears] = useState<YearGroup[]>([]);
+  const [selectedYearId, setSelectedYearId] = useState("");
+
+  useEffect(() => {
+    const fetchYears = async () => {
+      const res = await axios.get("http://localhost:3000/public/years");
+      const years: YearGroup[] = res.data.years;
+
+      setAvailableYears(years);
+
+      // default select latest year
+      if (years.length > 0) {
+        setSelectedYearId(years[years.length - 1]._id);
+      }
+    };
+
+    fetchYears();
+  }, []);
 
   return (
-    <YearContext.Provider value={{ selectedYear, setSelectedYear, availableYears }}>
+    <YearContext.Provider
+      value={{ availableYears, selectedYearId, setSelectedYearId }}
+    >
       {children}
     </YearContext.Provider>
   );
 };
 
 export const useYear = () => {
-  const context = useContext(YearContext);
-  if (!context) {
-    throw new Error('useYear must be used within a YearProvider');
-  }
-  return context;
+  const ctx = useContext(YearContext);
+  if (!ctx) throw new Error("useYear must be used inside YearProvider");
+  return ctx;
 };
